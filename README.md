@@ -1,109 +1,82 @@
 # configvim
 
-### 介绍
+一套跨平台的 Vim/C++ 开发环境配置，支持 **macOS、Ubuntu/Debian、CentOS/RHEL**。
 
-vim在centos7，ubuntu，mac下的配置脚本，个人用于c++的开发。
+## 安装
 
-### 安装
-
-```
-git clone https://gitee.com/helioswei/configvim.git
+```bash
+git clone https://github.com/helioswei/configvim.git
 cd configvim
 ./install.sh
 ```
 
-### 配置介绍
+## 一键安装做了什么
 
-#### 插件管理
+| 步骤 | 说明 |
+|------|------|
+| 备份旧配置 | `~/.vimrc` → `~/.vimrc.bak`（已有备份则追加时间戳） |
+| 安装配置 | 将仓库中的 `.vimrc` 拷贝到 `~/.vimrc` |
+| 安装插件管理器 | [vim-plug](https://github.com/junegunn/vim-plug)，失败自动重试并切换镜像 |
+| 安装系统依赖 | `clang`、`ctags`、`astyle`（macOS 通过 Xcode CLT + Homebrew，Linux 通过 apt/yum） |
+| 安装 Vim 插件 | 自动执行 `:PlugInstall`，下载 `.vimrc` 中配置的所有插件 |
 
-我们的vim的插件管理通过使用vim-plug来进行管理，[详细介绍](https://vimjc.com/vim-plug.html)。下载安装如下：
+> 整个过程无需 root 权限（系统包管理器调用时会提示 sudo）。
 
-```shell
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+## 插件列表
+
+### 代码导航
+
+| 插件 | 说明 |
+|------|------|
+| [nerdtree](https://github.com/preservim/nerdtree) | 文件树浏览器 |
+| [tagbar](https://github.com/majutsushi/tagbar) | 标签栏，显示类/方法/变量结构 |
+| [vim-gutentags](https://github.com/ludovicchabant/vim-gutentags) | 自动生成 ctags 标签 |
+| [a.vim](https://github.com/vim-scripts/a.vim) | `.h` / `.cpp` 文件快速切换 |
+
+### 代码编辑
+
+| 插件 | 说明 |
+|------|------|
+| [vim-cpp-enhanced-highlight](https://github.com/octol/vim-cpp-enhanced-highlight) | C++ 增强语法高亮 |
+| [auto-pairs](https://github.com/jiangmiao/auto-pairs) | 括号/引号自动配对 |
+| [vim-autoformat](https://github.com/vim-autoformat/vim-autoformat) | 代码格式化 |
+| [vim-protodef](https://github.com/derekwyatt/vim-protodef) | 从头文件生成函数实现框架 |
+| [vim-fswitch](https://github.com/derekwyatt/vim-fswitch) | 头文件与实现文件快速切换 |
+| [mark.vim](https://github.com/mbriggs/mark.vim) | 文本高亮标记 |
+| [vim-glsl](https://github.com/tikhomirov/vim-glsl) | GLSL 语法支持 |
+
+## 快捷键
+
+| 按键 | 功能 |
+|------|------|
+| `F2` | `.h` / `.cpp` 文件切换 |
+| `F3` | 开关 NERDTree 文件树 |
+| `F4` | JSON 格式化 |
+| `F8` | 开关 Tagbar 标签栏 |
+| `F1` | 代码格式化（astyle） |
+| `\s` | 头文件与实现文件快速切换（vim-fswitch） |
+| `Ctrl + ]` | 跳转定义（不自动选择，多个结果时列出） |
+
+## 手动管理插件
+
+```vim
+:PlugInstall   " 安装所有插件
+:PlugUpdate    " 更新所有插件
+:PlugClean     " 清理已删除的插件
+:PlugDiff      " 查看插件差异
 ```
 
-##### 插件的安装
+## 基础配置说明
 
-目前需要在Vim命令行模式下，使用命令 `:PlugInstall` 可安装vim配置文件中所有配置的vim插件。
-
-`todo:直接将已经下载好的插件的目录拷贝过去,预防因为网络的原因导致下载失败`
-
-#### 基础的配置
-
+```vim
+set number          " 显示行号
+set ruler           " 显示光标位置
+set laststatus=2    " 始终显示状态栏
+set tabstop=4       " Tab 宽度为 4 空格
+set expandtab       " Tab 展开为空格
+set incsearch       " 实时搜索
+set hlsearch        " 高亮搜索结果
+set wildmenu        " 命令行智能补全
+syntax enable       " 语法高亮
+filetype on         " 文件类型检测
 ```
-" 插入模式下删除
-" set backspace=indent,eol,start
-set backspace=2
-" 开启文件类别侦测
-filetype on
-" 根据侦测到的不同类型加载对应的插件
-filetype plugin on
-
-" 开启实时搜索功能
-set incsearch
-" 搜索时大小写不敏感
-set ignorecase
-" 关闭兼容模式
-set nocompatible
-" vim 自身命令行模式智能补全
-set wildmenu
-" 设置自动换行
-" set wrap
-
-" 总是显示状态栏
-set laststatus=2
-" 显示光标当前位置
-set ruler
-" 高亮显示当前行/列
-"set cursorline
-"set cursorcolumn
-" 高亮显示搜索结果
-set hlsearch
-" 设置默认显示行号
-set number
-" 开启语法高亮功能
-syntax enable
-
-" 代码缩进
-" 自适应不同语言的智能缩进
-filetype indent on
-" 将制表符扩展为空格
-set expandtab
-" 设置编辑时制表符占用的空格数
-set tabstop=4
-" 设置格式化时制表符占用的空格数
-set shiftwidth=4
-" 让vim把连续数量的空格视为一个制表符
-"set softtabstop=4
-```
-
-#### 代码格式化
-
-我们使用插件vim-autoformat/vim-autoformat来进行[代码格式化](https://aiezu.com/article/linux_vim_plugin_autoformat_install.html)`@todo:autoformat的详细介绍`。在使用的时候需要添加一些依赖的库，例如c++的clang等
-
-#### 代码跳转
-
-我们使用的是插件majutsushi/tagbar来进行的，需要依赖ctags来进行
-
-### 常用命令
-
-#### 内部移动
-
-- k：上移
-
-- j：下移
-
-- h：左移
-
-- l：右移
-
-#### 行内移动
-
-    利用f命令搜索某字符方式 ，f表示向后移动到某字符；
-
--  **fa表示向后移动到字符a处**
-
--   **Fa表示向前移动到字符a处**
-
-
